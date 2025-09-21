@@ -1,31 +1,20 @@
     <x-app-layout>
         <x-slot name="header">
-            <div class="flex justify-between items-center">
-                <h2 class="font-semibold text-xl text-white leading-tight">
-                    {{ __('Riwayat Pengaduan Anda') }}
-                </h2>
-                <a href="{{ route('pengaduan.create') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                    Buat Pengaduan Baru
-                </a>
-            </div>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                {{ __('Admin Dashboard - Semua Pengaduan') }}
+            </h2>
         </x-slot>
 
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                     <div class="p-6 text-gray-900">
-                        <!-- Tampilkan pesan sukses jika ada -->
-                        @if (session('success'))
-                        <div class="mb-4 p-4 bg-green-100 text-green-700 rounded-md">
-                            {{ session('success') }}
-                        </div>
-                        @endif
-
                         <div class="relative overflow-x-auto">
                             <table class="w-full text-sm text-left text-gray-500">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-6 py-3">Judul</th>
+                                        <th scope="col" class="px-6 py-3">Pelapor</th>
                                         <th scope="col" class="px-6 py-3">Tanggal</th>
                                         <th scope="col" class="px-6 py-3">Status</th>
                                         <th scope="col" class="px-6 py-3">Aksi</th>
@@ -34,9 +23,8 @@
                                 <tbody>
                                     @forelse ($pengaduan as $item)
                                     <tr class="bg-white border-b">
-                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                                            {{ $item->judul }}
-                                        </th>
+                                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{{ $item->judul }}</th>
+                                        <td class="px-6 py-4">{{ $item->user->name }}</td>
                                         <td class="px-6 py-4">{{ $item->created_at->format('d M Y') }}</td>
                                         <td class="px-6 py-4">
                                             <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full
@@ -48,13 +36,13 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <a href="{{ route('pengaduan.show', $item) }}" class="font-medium text-indigo-600 hover:text-indigo-900">Lihat Detail</a>
+                                            <a href="{{ route('admin.pengaduan.show', $item) }}" class="font-medium text-indigo-600 hover:text-indigo-900">Proses</a>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-4 text-center text-gray-500">
-                                            Anda belum pernah membuat pengaduan.
+                                        <td colspan="5" class="px-6 py-4 text-center text-gray-500">
+                                            Tidak ada data pengaduan.
                                         </td>
                                     </tr>
                                     @endforelse

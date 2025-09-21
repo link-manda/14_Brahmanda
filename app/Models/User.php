@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -18,8 +19,10 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nik', // Tambahkan NIK
         'email',
         'password',
+        'role', // Tambahkan Role
     ];
 
     /**
@@ -43,5 +46,13 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Seorang User bisa memiliki banyak pengaduan.
+     */
+    public function pengaduan(): HasMany
+    {
+        return $this->hasMany(Pengaduan::class);
     }
 }

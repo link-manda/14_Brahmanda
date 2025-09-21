@@ -10,9 +10,6 @@ use Illuminate\View\View;
 
 class PengaduanController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(): View
     {
         // Ambil hanya pengaduan milik user yang sedang login, urutkan dari terbaru
@@ -21,9 +18,6 @@ class PengaduanController extends Controller
         return view('dashboard', compact('pengaduan'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create(): View
     {
         return view('pengaduan.create');
@@ -42,8 +36,11 @@ class PengaduanController extends Controller
 
         $pathFoto = null;
         if ($request->hasFile('foto_bukti')) {
-            // Simpan gambar ke storage/app/public/bukti
-            $pathFoto = $request->file('foto_bukti')->store('public/bukti');
+            // --- MULAI PERBAIKAN ---
+            // Simpan gambar ke disk 'public' di dalam folder 'bukti'.
+            // Ini akan mengembalikan path seperti 'bukti/namafile.jpg'
+            $pathFoto = $request->file('foto_bukti')->store('bukti', 'public');
+            // --- AKHIR PERBAIKAN ---
         }
 
         // Buat pengaduan baru milik user yang sedang login
@@ -56,15 +53,10 @@ class PengaduanController extends Controller
         return redirect()->route('dashboard')->with('success', 'Pengaduan Anda telah berhasil dikirim!');
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Pengaduan $pengaduan): View
     {
         // Pastikan hanya pemilik pengaduan yang bisa melihat detailnya
-        if ($pengaduan->user_id !== Auth::id()) {
-            abort(403); // Unauthorized
-        }
+        abort_if($pengaduan->user_id !== Auth::id(), 403);
 
         // Eager load relasi untuk menghindari N+1 problem
         $pengaduan->load('tanggapan.petugas');

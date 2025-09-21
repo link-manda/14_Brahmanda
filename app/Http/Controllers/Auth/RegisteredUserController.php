@@ -31,14 +31,17 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nik' => ['required', 'string', 'size:16', 'unique:' . User::class], // Tambahkan validasi NIK
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'nik' => $request->nik, // Tambahkan NIK
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            // role akan otomatis 'masyarakat' sesuai default di migrasi
         ]);
 
         event(new Registered($user));

@@ -18,14 +18,14 @@
 <body class="font-sans antialiased bg-gray-50 dark:bg-black">
     <div class="relative min-h-screen flex flex-col items-center justify-center bg-center bg-gray-100 dark:bg-gray-900 selection:bg-red-500 selection:text-white">
         <!-- Background Image -->
-        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1537953773345-d1ab3cc5a62f?q=80&w=2070&auto=format&fit=crop');">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image: url('https://panbelog.files.wordpress.com/2014/01/011914_1323_asalmulaman1.jpg?w=619&h=276');">
             <div class="absolute inset-0 bg-black opacity-60"></div>
         </div>
 
         <div class="relative w-full max-w-7xl mx-auto px-6 lg:px-8 z-10">
             <header class="flex items-center justify-between py-8">
                 <div class="flex items-center">
-                    <img src="{{ asset('images/logo-badung.png') }}" alt="Logo Kabupaten Badung" class="h-12 w-auto">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Lambang_Kabupaten_Badung.png" alt="Logo Kabupaten Badung" class="h-12 w-auto">
                     <span class="ml-4 text-xl font-bold text-white">Badung Lapor</span>
                 </div>
                 <nav>

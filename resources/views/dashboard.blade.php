@@ -1,7 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            {{-- Perbaikan Dark Mode: Mengubah warna teks header --}}
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
                 {{ __('Riwayat Pengaduan Anda') }}
             </h2>
@@ -12,21 +11,19 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            {{-- Perbaikan Dark Mode: Menambahkan warna latar belakang dan border --}}
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 2xl:max-w-screen-2xl">
             <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900 dark:text-gray-100">
                     <!-- Tampilkan pesan sukses jika ada -->
                     @if (session('success'))
-                    <div class="mb-4 p-4 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-200 rounded-md">
-                        {{ session('success') }}
-                    </div>
+                        <div class="mb-4 p-4 bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-md">
+                            {{ session('success') }}
+                        </div>
                     @endif
 
                     <div class="relative overflow-x-auto">
-                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                            {{-- Perbaikan Dark Mode: Warna header tabel --}}
-                            <thead class="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
+                        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Judul</th>
                                     <th scope="col" class="px-6 py-3">Tanggal</th>
@@ -36,10 +33,8 @@
                             </thead>
                             <tbody>
                                 @forelse ($pengaduan as $item)
-                                {{-- Perbaikan Dark Mode: Warna baris dan border tabel --}}
-                                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    {{-- Perbaikan Dark Mode: Warna teks utama baris --}}
-                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap">
+                                <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                    <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
                                         {{ $item->judul }}
                                     </th>
                                     <td class="px-6 py-4">{{ $item->created_at->format('d M Y') }}</td>
@@ -53,11 +48,11 @@
                                         </span>
                                     </td>
                                     <td class="px-6 py-4">
-                                        <a href="{{ route('pengaduan.show', $item) }}" class="font-medium text-indigo-600 dark:text-indigo-400 hover:underline">Lihat Detail</a>
+                                        <a href="{{ route('pengaduan.show', $item) }}" class="font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-900">Lihat Detail</a>
                                     </td>
                                 </tr>
                                 @empty
-                                <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+                                <tr>
                                     <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
                                         Anda belum pernah membuat pengaduan.
                                     </td>
@@ -66,11 +61,12 @@
                             </tbody>
                         </table>
                     </div>
-                    {{-- Perbaikan Dark Mode: Styling paginasi --}}
-                    <div class="mt-4 p-2">
+                    <div class="mt-4">
                         {{ $pengaduan->links() }}
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 </x-app-layout>
+

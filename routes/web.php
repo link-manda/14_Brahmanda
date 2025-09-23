@@ -26,16 +26,20 @@ Route::middleware('auth')->group(function () {
     Route::get('/pengaduan/{pengaduan}', [PengaduanController::class, 'show'])->name('pengaduan.show');
 
     Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+        // Route yang bisa diakses oleh admin DAN petugas
         Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
         Route::get('/pengaduan/{pengaduan}', [AdminController::class, 'show'])->name('pengaduan.show');
         Route::post('/tanggapan/{pengaduan}', [AdminController::class, 'storeTanggapan'])->name('tanggapan.store');
-        
-        Route::get('/users', [UserController::class, 'index'])->name('users.index');
-        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-        Route::post('/users', [UserController::class, 'store'])->name('users.store');
-
-        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
-        Route::post('/laporan/generate', [LaporanController::class, 'generate'])->name('laporan.generate');
+    
+        // Route yang HANYA bisa diakses oleh admin
+        Route::middleware('can:manage-system')->group(function() {
+            Route::get('/users', [UserController::class, 'index'])->name('users.index');
+            Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+            Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    
+            Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+            Route::post('/laporan/generate', [LaporanController::class, 'generate'])->name('laporan.generate');
+        });
     });
 });
 

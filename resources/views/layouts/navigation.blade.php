@@ -17,14 +17,17 @@
                         <x-icons.layout-dashboard class="w-5 h-5" />
                         <span>{{ __('Admin Dashboard') }}</span>
                     </x-nav-link>
-                    <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="flex items-center space-x-2">
-                        <x-icons.users class="w-5 h-5" />
-                        <span>{{ __('Manajemen Pengguna') }}</span>
-                    </x-nav-link>
-                    <x-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('admin.laporan.*')" class="flex items-center space-x-2">
-                        <x-icons.document-text class="w-5 h-5" />
-                        <span>{{ __('Generate Laporan') }}</span>
-                    </x-nav-link>
+                    @can('manage-system')
+                        <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')" class="flex items-center space-x-2">
+                            <x-icons.users class="w-5 h-5" />
+                            <span>{{ __('Manajemen Pengguna') }}</span>
+                        </x-nav-link>
+
+                        <x-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('admin.laporan.*')" class="flex items-center space-x-2">
+                            <x-icons.document-text class="w-5 h-5" />
+                            <span>{{ __('Generate Laporan') }}</span>
+                        </x-nav-link>
+                    @endcan
                     @else
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="flex items-center space-x-2">
                         <x-icons.layout-dashboard class="w-5 h-5" />
@@ -91,10 +94,18 @@
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
-             @if(Auth::user()->role === 'admin' || Auth::user()->role === 'petugas')
+            @if(Auth::user()->role === 'admin' || Auth::user()->role === 'petugas')
                 <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
                     {{ __('Admin Dashboard') }}
                 </x-responsive-nav-link>
+                @can('manage-system')
+                    <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                        {{ __('Manajemen Pengguna') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('admin.laporan.index')" :active="request()->routeIs('admin.laporan.*')">
+                        {{ __('Generate Laporan') }}
+                    </x-responsive-nav-link>
+                @endcan
             @else
                 <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                     {{ __('Dashboard') }}

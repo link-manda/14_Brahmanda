@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pengaduan;
 use App\Models\Tanggapan;
+use App\Mail\TanggapanDiterima;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
 
 class AdminController extends Controller
@@ -17,10 +19,20 @@ class AdminController extends Controller
      */
     public function index(): View
     {
-        // Ambil SEMUA pengaduan, eager load relasi 'user' untuk tampilkan nama pelapor
-        $pengaduan = Pengaduan::with('user')->latest()->paginate(10);
+        // --- MULAI PERUBAHAN ---
+        // Menghitung statistik pengaduan
+        $stats = [
+            'total' => Pengaduan::count(),
+            'pending' => Pengaduan::where('status', 'pending')->count(),
+            'diproses' => Pengaduan::where('status', 'diproses')->count(),
+            'selesai' => Pengaduan::where('status', 'selesai')->count(),
+        ];
 
-        return view('admin.dashboard', compact('pengaduan'));
+        // Ambil 5 pengaduan terbaru untuk ditampilkan di bawah statistik
+        $pengaduanTerbaru = Pengaduan::with('user')->latest()->take(5)->get();
+
+        return view('admin.dashboard', compact('stats', 'pengaduanTerbaru'));
+        // --- AKHIR PERUBAHAN ---
     }
 
     /**
@@ -55,6 +67,14 @@ class AdminController extends Controller
             'status' => $request->status,
         ]);
 
+        try {
+            Mail::to($pengaduan->user->email)->send(new TanggapanDiterima($pengaduan));
+        } catch (\Exception $e) {
+            // Opsional: catat error ke log jika pengiriman gagal
+            // Log::error('Gagal mengirim email notifikasi: ' . $e->getMessage());
+        }
+
         return back()->with('success', 'Tanggapan berhasil dikirim dan status telah diperbarui!');
     }
 }
+

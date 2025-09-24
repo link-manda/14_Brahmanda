@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Kategori;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,8 +19,8 @@ class UserController extends Controller
     public function index(): View
     {
         $users = User::whereIn('role', ['admin', 'petugas'])
-                     ->latest()
-                     ->paginate(10);
+            ->latest()
+            ->paginate(10);
 
         return view('admin.users.index', compact('users'));
     }
@@ -39,8 +40,8 @@ class UserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'nik' => ['required', 'string', 'size:16', 'unique:'.User::class],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
+            'nik' => ['required', 'string', 'size:16', 'unique:' . User::class],
+            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
@@ -49,10 +50,40 @@ class UserController extends Controller
             'nik' => $request->nik,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'petugas', // Set role langsung sebagai petugas
-            'email_verified_at' => now(), // Langsung verifikasi email
+            'role' => 'petugas',
+            'email_verified_at' => now(),
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Petugas baru berhasil ditambahkan.');
+    }
+
+    /**
+     * Menampilkan form untuk menugaskan kategori ke petugas.
+     */
+    public function edit(User $user)
+    {
+        $this->authorize('manage-system');
+
+        $kategori = Kategori::all();
+        $kategoriDitugaskan = $user->kategoriDitugaskan()->pluck('kategori.id')->toArray();
+
+        return view('admin.users.edit', compact('user', 'kategori', 'kategoriDitugaskan'));
+    }
+
+    /**
+     * Menyimpan perubahan penugasan kategori.
+     */
+    public function update(Request $request, User $user)
+    {
+        $this->authorize('manage-system');
+
+        $request->validate([
+            'kategori_ids' => 'nullable|array',
+            'kategori_ids.*' => 'exists:kategori,id'
+        ]);
+
+        $user->kategoriDitugaskan()->sync($request->input('kategori_ids', []));
+
+        return redirect()->route('admin.users.index')->with('success', 'Penugasan untuk ' . $user->name . ' berhasil diperbarui.');
     }
 }

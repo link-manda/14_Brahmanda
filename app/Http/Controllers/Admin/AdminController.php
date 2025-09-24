@@ -7,7 +7,7 @@ use App\Models\Pengaduan;
 use App\Models\Tanggapan;
 use App\Mail\TanggapanDiterima;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request; // <-- Pastikan ini ada
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -30,7 +30,19 @@ class AdminController extends Controller
         ];
 
         // Memulai query builder
-        $query = Pengaduan::with('user')->latest();
+        $query = Pengaduan::with('user', 'kategori')->latest();
+
+        // --- MULAI PERUBAHAN LOGIKA UNTUK PETUGAS ---
+        $user = Auth::user();
+
+        // Jika yang login adalah PETUGAS, filter laporannya
+        if ($user->role === 'petugas') {
+            // Ambil ID semua kategori yang ditugaskan padanya
+            $kategoriIds = $user->kategoriDitugaskan()->pluck('kategori.id');
+
+            // Terapkan filter whereIn
+            $query->whereIn('kategori_id', $kategoriIds);
+        }
 
         // Terapkan filter PENCARIAN jika ada
         if ($request->filled('search')) {

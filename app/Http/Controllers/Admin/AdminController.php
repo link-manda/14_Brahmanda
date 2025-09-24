@@ -7,7 +7,7 @@ use App\Models\Pengaduan;
 use App\Models\Tanggapan;
 use App\Mail\TanggapanDiterima;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\Request; // <-- Pastikan ini ada
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\View\View;
@@ -17,10 +17,11 @@ class AdminController extends Controller
     /**
      * Menampilkan dashboard admin dengan semua data pengaduan.
      */
-    public function index(): View
+    public function index(Request $request): View // <-- Tambahkan Request $request
     {
         // --- MULAI PERUBAHAN ---
-        // Menghitung statistik pengaduan
+
+        // Statistik tidak berubah
         $stats = [
             'total' => Pengaduan::count(),
             'pending' => Pengaduan::where('status', 'pending')->count(),
@@ -28,16 +29,35 @@ class AdminController extends Controller
             'selesai' => Pengaduan::where('status', 'selesai')->count(),
         ];
 
-        // Ambil 5 pengaduan terbaru untuk ditampilkan di bawah statistik
-        $pengaduanTerbaru = Pengaduan::with('user')->latest()->take(5)->get();
+        // Memulai query builder
+        $query = Pengaduan::with('user')->latest();
 
-        return view('admin.dashboard', compact('stats', 'pengaduanTerbaru'));
+        // Terapkan filter PENCARIAN jika ada
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($userQuery) use ($search) {
+                        $userQuery->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        // Terapkan filter STATUS jika ada
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        // Eksekusi query dengan pagination
+        // withQueryString() akan memastikan filter tetap ada saat berpindah halaman
+        $pengaduan = $query->paginate(10)->withQueryString();
+
+        return view('admin.dashboard', compact('stats', 'pengaduan'));
+
         // --- AKHIR PERUBAHAN ---
     }
 
-    /**
-     * Menampilkan detail satu pengaduan untuk diproses.
-     */
+    // ... (method show dan storeTanggapan tetap sama)
     public function show(Pengaduan $pengaduan): View
     {
         // Eager load semua relasi yang dibutuhkan
@@ -45,9 +65,6 @@ class AdminController extends Controller
         return view('admin.pengaduan.show', compact('pengaduan'));
     }
 
-    /**
-     * Menyimpan tanggapan dan mengubah status pengaduan.
-     */
     public function storeTanggapan(Request $request, Pengaduan $pengaduan): RedirectResponse
     {
         $request->validate([
@@ -55,14 +72,12 @@ class AdminController extends Controller
             'status' => 'required|in:pending,diproses,selesai,ditolak',
         ]);
 
-        // 1. Simpan tanggapan baru
         Tanggapan::create([
             'pengaduan_id' => $pengaduan->id,
-            'petugas_id' => Auth::id(), // ID admin/petugas yang sedang login
+            'petugas_id' => Auth::id(),
             'isi_tanggapan' => $request->isi_tanggapan,
         ]);
 
-        // 2. Update status pengaduan
         $pengaduan->update([
             'status' => $request->status,
         ]);
@@ -71,10 +86,8 @@ class AdminController extends Controller
             Mail::to($pengaduan->user->email)->send(new TanggapanDiterima($pengaduan));
         } catch (\Exception $e) {
             // Opsional: catat error ke log jika pengiriman gagal
-            // Log::error('Gagal mengirim email notifikasi: ' . $e->getMessage());
         }
 
         return back()->with('success', 'Tanggapan berhasil dikirim dan status telah diperbarui!');
     }
 }
-

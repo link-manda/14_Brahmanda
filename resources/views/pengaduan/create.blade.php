@@ -21,6 +21,18 @@
                             <x-input-error :messages="$errors->get('judul')" class="mt-2" />
                         </div>
 
+                        <!-- Kategori -->
+                        <div class="mt-4">
+                            <x-input-label for="kategori_id" value="Kategori Pengaduan" />
+                            <select name="kategori_id" id="kategori_id" class="block mt-1 w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm" required>
+                                <option value="" disabled selected>-- Pilih Kategori --</option>
+                                @foreach ($kategori as $item)
+                                <option value="{{ $item->id }}" {{ old('kategori_id') == $item->id ? 'selected' : '' }}>{{ $item->nama_kategori }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('kategori_id')" class="mt-2" />
+                        </div>
+
                         <!-- Isi Laporan -->
                         <div class="mt-4">
                             <x-input-label for="isi_laporan" value="Isi Laporan" />

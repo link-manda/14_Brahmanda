@@ -15,6 +15,7 @@ class Pengaduan extends Model
 
     protected $fillable = [
         'user_id',
+        'kategori_id',
         'judul',
         'isi_laporan',
         'foto_bukti',
@@ -35,5 +36,13 @@ class Pengaduan extends Model
     public function tanggapan(): HasMany
     {
         return $this->hasMany(Tanggapan::class);
+    }
+
+    /**
+     * Satu pengaduan hanya memiliki satu Kategori.
+     */
+    public function kategori(): BelongsTo
+    {
+        return $this->belongsTo(Kategori::class);
     }
 }

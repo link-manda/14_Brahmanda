@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pengaduan;
+use App\Models\Kategori;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,8 @@ class PengaduanController extends Controller
 
     public function create(): View
     {
-        return view('pengaduan.create');
+        $kategori = Kategori::all(); // <-- Ambil semua kategori
+        return view('pengaduan.create', compact('kategori')); // <-- Kirim ke view
     }
 
     /**
@@ -29,6 +31,7 @@ class PengaduanController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->validate([
+            'kategori_id' => 'required|exists:kategori,id',
             'judul' => 'required|string|max:255',
             'isi_laporan' => 'required|string',
             'foto_bukti' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // max 2MB
@@ -45,6 +48,7 @@ class PengaduanController extends Controller
 
         // Buat pengaduan baru milik user yang sedang login
         $request->user()->pengaduan()->create([
+            'kategori_id' => $request->kategori_id,
             'judul' => $request->judul,
             'isi_laporan' => $request->isi_laporan,
             'foto_bukti' => $pathFoto,

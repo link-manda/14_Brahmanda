@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PengaduanController; 
 use Illuminate\Support\Facades\Route;
@@ -33,9 +34,8 @@ Route::middleware('auth')->group(function () {
     
         // Route yang HANYA bisa diakses oleh admin
         Route::middleware('can:manage-system')->group(function() {
-            Route::get('/users', [UserController::class, 'index'])->name('users.index');
-            Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
-            Route::post('/users', [UserController::class, 'store'])->name('users.store');
+            Route::resource('users', UserController::class)->except(['show', 'edit', 'update', 'destroy']);
+            Route::resource('kategori', KategoriController::class);
     
             Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
             Route::post('/laporan/generate', [LaporanController::class, 'generate'])->name('laporan.generate');

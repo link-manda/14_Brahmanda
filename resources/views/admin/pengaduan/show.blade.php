@@ -28,6 +28,12 @@
                         </header>
                         <div class="mt-6 space-y-4">
                             <div>
+                                <h3 class="font-semibold text-gray-900 dark:text-gray-100">Kategori</h3>
+                                <p class="mt-1 text-gray-600 dark:text-gray-400">
+                                    {{ $pengaduan->kategori->nama_kategori ?? 'Tidak Berkategori' }}
+                                </p>
+                            </div>
+                            <div>
                                 <h3 class="font-semibold text-gray-800 dark:text-gray-200">Isi Laporan</h3>
                                 <p class="mt-2 text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{{ $pengaduan->isi_laporan }}</p>
                             </div>

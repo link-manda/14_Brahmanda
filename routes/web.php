@@ -46,7 +46,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Route yang HANYA bisa diakses oleh admin
     Route::middleware('can:manage-system')->group(function () {
-        Route::resource('users', UserController::class)->except(['show', 'edit', 'destroy']);
+        Route::resource('users', UserController::class)->except(['show', 'destroy']);
         Route::resource('kategori', KategoriController::class);
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');

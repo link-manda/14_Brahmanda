@@ -18,6 +18,7 @@ class UserController extends Controller
      */
     public function index(): View
     {
+        $this->authorize('manage-system'); // <-- Tambahkan proteksi
         $users = User::whereIn('role', ['admin', 'petugas'])
             ->latest()
             ->paginate(10);
@@ -30,6 +31,7 @@ class UserController extends Controller
      */
     public function create(): View
     {
+        $this->authorize('manage-system'); // <-- Tambahkan proteksi
         return view('admin.users.create');
     }
 
@@ -38,6 +40,7 @@ class UserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        $this->authorize('manage-system'); // <-- Tambahkan proteksi
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'nik' => ['required', 'string', 'size:16', 'unique:' . User::class],
